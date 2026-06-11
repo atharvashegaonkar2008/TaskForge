@@ -267,3 +267,27 @@ opacity:0.8;
     border-radius:10px;
     margin-bottom:10px;
 }
+
+@media(max-width:768px){
+    .dashboard-container{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+        height:auto;
+    }
+
+    .main-content{
+        margin-left:0;
+        padding:20px;
+    }
+
+    .projects-grid{
+        grid-template-columns:1fr;
+    }
+
+    .stats-grid{
+        grid-template-columns:1fr;
+    }
+}

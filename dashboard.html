@@ -20,68 +20,35 @@
             <li>👨‍🏫 Mentors</li>
             <li>📁 Files</li>
             <li>⚙ Settings</li>
+            <li onclick="logout()">🚪 Logout</li>
         </ul>
     </aside>
     <main class="main-content">
         <h1>Dashboard Overview</h1>
         <div class="stats-grid">
     <div class="stat-card">
-        <h2>24</h2>
-        <p>Active Projects</p>
+        <h2 id="dashboard-total-tasks">0</h2>
+        <p>Total Tasks</p>
     </div>
 
     <div class="stat-card">
-        <h2>156</h2>
+        <h2 id="dashboard-completed-tasks">0</h2>
         <p>Completed Tasks</p>
     </div>
 
     <div class="stat-card">
-        <h2>8</h2>
+        <h2 id="dashboard-pending-reviews">0</h2>
         <p>Pending Reviews</p>
     </div>
 
     <div class="stat-card">
-        <h2>12</h2>
+        <h2 id="dashboard-team-members">0</h2>
         <p>Team Members</p>
     </div>
     <div class="content-grid">
     <div class="panel">
         <h3>Recent Tasks</h3>
-        <div class="task">
-            <span>🎨 UI Design</span>
-            <span>In Progress</span>
-        </div>
-        <div class="task">
-            <span>⚙ Backend API</span>
-            <span>Completed</span>
-        </div>
-        <div class="task">
-            <span>👨‍🏫 Mentor Review</span>
-            <span>Pending</span>
-        </div>
-        <div class="task">
-            <span>📊 Dashboard Module</span>
-            <span>In Progress</span>
-        </div>
-    </div>
-
-    <div class="panel activity-panel">
-    <h3>Recent Activity</h3>
-
-    <div class="activity">
-        <p>🎨 Rahul completed UI Design</p>
-    </div>
-
-    <div class="activity">
-        <p>📁 Priya uploaded Project Report</p>
-    </div>
-
-    <div class="activity">
-        <p>👨‍🏫 Mentor approved Review #3</p>
-    </div>
-
-    <div class="activity">
-        <p>✅ Atharv created Dashboard Module</p>
+        <div id="recent-tasks"></div>
     </div>
 </div>
 <div class="panel deadlines-panel">
@@ -139,7 +106,7 @@
     </div>
     <div class="panel">
     <h3>Profile</h3>
-    <h2>Atharv</h2>
+    <h2 id="user-name"></h2>
     <p>Student</p>
     <p>Computer Engineering</p>
 </div>

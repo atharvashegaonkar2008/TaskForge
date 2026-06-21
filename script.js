@@ -1,3 +1,25 @@
+const currentUser =
+    localStorage.getItem(
+        "loggedInUser"
+    );
+
+const currentPage =
+    window.location.pathname;
+
+if(
+    !currentUser &&
+    (
+        currentPage.includes("dashboard.html") ||
+        currentPage.includes("tasks.html") ||
+        currentPage.includes("projects.html") ||
+        currentPage.includes("mentors.html") ||
+        currentPage.includes("files.html")
+    )
+){
+    window.location.href =
+        "login.html";
+}
+
 let currentFilter = "all";
 function showAllTasks(){
     currentFilter = "all";
@@ -12,6 +34,16 @@ function showCompletedTasks(){
 function showPendingTasks(){
     currentFilter = "pending";
     renderTasks();
+}
+
+function logout(){
+
+    localStorage.removeItem(
+        "loggedInUser"
+    );
+
+    window.location.href =
+        "login.html";
 }
 
 let tasks = JSON.parse(
@@ -82,9 +114,23 @@ if (signupForm) {
             return;
         }
         
-        alert('Account created successfully!');
-        signupForm.reset();
-    });
+        const user = {
+            fullName: fullName,
+            email: email,
+            password: password
+        };
+
+        localStorage.setItem(
+            "user",
+            JSON.stringify(user)
+        );
+
+        alert("Account created successfully!");
+
+        window.location.href =
+            "login.html";       
+        }
+    );
 }
 function welcome(){
     alert("Welcome to TaskForge");
@@ -143,6 +189,12 @@ function addTask(){
 
 function updateStats(){
 
+    if(
+        !document.getElementById("total-tasks")
+    ){
+        return;
+    }
+
     let completed = 0;
 
     for(let i = 0; i < tasks.length; i++){
@@ -163,6 +215,7 @@ function updateStats(){
     document.getElementById("pending-tasks")
         .textContent = pending;
 }
+
 
 function editTask(index){
 
@@ -189,6 +242,10 @@ function renderTasks(){
 
     const container =
         document.getElementById("tasks-container");
+
+    if(!container){
+        return;
+    }
 
     container.innerHTML = "";
 
@@ -263,6 +320,166 @@ function renderTasks(){
     }
     updateStats();
 }
-renderTasks();
 
+const loginForm =
+    document.getElementById("login-form");
 
+if(loginForm){
+
+    loginForm.addEventListener(
+        "submit",
+        function(e){
+
+            e.preventDefault();
+
+            alert("Login button clicked");
+
+            const email =
+                document.getElementById("email").value;
+
+            const password =
+                document.getElementById("password").value;
+
+            if(
+                email === "" ||
+                password === ""
+            ){
+                alert(
+                    "Please fill all fields"
+                );
+                return;
+            }
+            const user = JSON.parse(
+                localStorage.getItem("user")
+            );
+
+            if(
+                !user ||
+                user.email !== email ||
+                user.password !== password
+            ){
+                alert(
+                    "Invalid Email or Password"
+                );
+
+                return;
+            }
+
+            localStorage.setItem(
+                "loggedInUser",
+                email
+            );
+
+            alert(
+                "Login Successful"
+            );
+
+            window.location.href =
+            "dashboard.html";
+        }
+    );
+}
+
+if(
+    document.getElementById(
+        "tasks-container"
+    )
+){
+    renderTasks();
+}
+            
+const userNameElement =
+    document.getElementById("user-name");
+
+if(userNameElement){
+
+    const user = JSON.parse(
+        localStorage.getItem("user")
+    );
+
+    if(user){
+        userNameElement.textContent =
+            user.fullName;
+    }
+}
+
+function loadDashboardStats(){
+
+    const totalElement =
+        document.getElementById(
+            "dashboard-total-tasks"
+        );
+
+    if(!totalElement){
+        return;
+    }
+
+    let completed = 0;
+
+    for(let i = 0; i < tasks.length; i++){
+
+        if(tasks[i].completed){
+            completed++;
+        }
+    }
+
+    const pending =
+        tasks.length - completed;
+
+    document.getElementById(
+        "dashboard-total-tasks"
+    ).textContent = tasks.length;
+
+    document.getElementById(
+        "dashboard-completed-tasks"
+    ).textContent = completed;
+
+    document.getElementById(
+        "dashboard-pending-tasks"
+    ).textContent = pending;
+}
+
+loadDashboardStats();
+
+function loadRecentTasks(){
+
+    const recentTasksContainer =
+        document.getElementById(
+            "recent-tasks"
+        );
+
+    if(!recentTasksContainer){
+        return;
+    }
+
+    recentTasksContainer.innerHTML = "";
+
+    const limit =
+        Math.min(tasks.length, 5);
+
+    for(let i = 0; i < limit; i++){
+
+        const task = tasks[i];
+
+        const status =
+            task.completed
+            ? "Completed"
+            : "Pending";
+
+        const taskDiv =
+            document.createElement("div");
+
+        taskDiv.classList.add("task");
+
+        taskDiv.innerHTML = `
+            <span>${task.title}</span>
+            <span>${status}</span>
+        `;
+
+        recentTasksContainer.appendChild(
+            taskDiv
+        );
+    }
+}
+
+loadRecentTasks();

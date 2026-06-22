@@ -79,10 +79,22 @@ let tasks = JSON.parse(
     }
 ];
 
+let projects = JSON.parse(
+    localStorage.getItem("projects")
+) || [];
+
 function saveTasks(){
     localStorage.setItem(
         "tasks",
         JSON.stringify(tasks)
+    );
+}
+
+function saveProjects(){
+
+    localStorage.setItem(
+        "projects",
+        JSON.stringify(projects)
     );
 }
 
@@ -185,6 +197,149 @@ function addTask(){
 
     saveTasks();
     renderTasks();
+}
+
+function addProject(){
+
+    const projectName = prompt(
+        "Enter Project Name"
+    );
+
+    if(
+        projectName === null ||
+        projectName.trim() === ""
+    ){
+        return;
+    }
+
+    const projectStatus = prompt(
+    "Enter Status (Planning, In Progress, Review, Completed)"
+    );
+
+    const projectProgress = prompt(
+        "Enter Progress (0-100)"
+    );
+
+    projects.push({
+        name: projectName,
+        status: projectStatus || "Planning",
+        progress: Number(projectProgress) || 0,
+        members: 1
+    });
+
+    saveProjects();
+
+    renderProjects();
+}
+
+function renderProjects(){
+
+    const container =
+        document.getElementById(
+            "projects-container"
+        );
+
+    if(!container){
+        return;
+    }
+
+    container.innerHTML = "";
+
+    for(
+        let i = 0;
+        i < projects.length;
+        i++
+    ){
+
+        const project =
+            projects[i];
+
+        const card =
+            document.createElement("div");
+
+        card.classList.add(
+            "project-card"
+        );
+
+        card.innerHTML = `
+            <h3>${project.name}</h3>
+
+            <p>Status: ${project.status}</p>
+
+            <p>
+                Progress:
+                ${project.progress}%
+            </p>
+
+            <div class="progress-bar">
+                <div
+                    class="progress-fill"
+                    style="width:${project.progress}%"
+                ></div>
+            </div>
+
+            <p>Team: ${project.members} Members</p>
+
+            <button onclick="editProject(${i})">
+                Edit
+            </button>
+
+            <button onclick="deleteProject(${i})">
+                Delete
+            </button>
+        `;
+
+        container.appendChild(
+            card
+        );
+    }
+}
+
+function deleteProject(index){
+
+    projects.splice(index, 1);
+
+    saveProjects();
+
+    renderProjects();
+}
+
+function editProject(index){
+
+    const newName = prompt(
+        "Enter new project name",
+        projects[index].name
+    );
+
+    if(
+        newName === null ||
+        newName.trim() === ""
+    ){
+        return;
+    }
+
+    const newStatus = prompt(
+        "Enter Status",
+        projects[index].status
+    );
+
+    const newProgress = prompt(
+    "Enter Progress",
+    projects[index].progress
+    );
+
+    projects[index].name =
+        newName.trim();
+
+    projects[index].status =
+        newStatus || projects[index].status;
+
+    projects[index].progress =
+        Number(newProgress);
+
+    saveProjects();
+
+    renderProjects();
 }
 
 function updateStats(){
@@ -454,12 +609,18 @@ function loadRecentTasks(){
 
     recentTasksContainer.innerHTML = "";
 
-    const limit =
-        Math.min(tasks.length, 5);
+    if(tasks.length === 0){
+    recentTasksContainer.innerHTML =
+        "<p>No tasks found.</p>";
+    return;
+    }
 
-    for(let i = 0; i < limit; i++){
+    const recentTasks =
+    tasks.slice(-5).reverse();
 
-        const task = tasks[i];
+    for(let i = 0; i < recentTasks.length; i++){
+
+        const task = recentTasks[i];
 
         const status =
             task.completed
@@ -483,3 +644,11 @@ function loadRecentTasks(){
 }
 
 loadRecentTasks();
+
+if(
+    document.getElementById(
+        "projects-container"
+    )
+){
+    renderProjects();
+}

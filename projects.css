@@ -165,7 +165,7 @@ opacity:0.8;
 }
 
 .project-info{
-    background:white;
+    background:rgb(40, 154, 20);
     padding:20px;
     border-radius:12px;
     margin-top:20px;
@@ -175,3 +175,4 @@ opacity:0.8;
 .project-info p{
     margin:12px 0;
 }
+

@@ -220,17 +220,29 @@ function addProject(){
         "Enter Progress (0-100)"
     );
 
+    const memberCount = prompt(
+    "Enter Team Members Count"
+    );
+
+    const description = prompt(
+    "Enter Project Description"
+    );
+
     projects.push({
-        name: projectName,
-        status: projectStatus || "Planning",
-        progress: Number(projectProgress) || 0,
-        members: 1
+    name: projectName,
+    status: projectStatus || "Planning",
+    progress: Number(projectProgress) || 0,
+    members: Number(memberCount) || 1,
+    description:
+        description || "No Description"
     });
 
     saveProjects();
 
     renderProjects();
 }
+
+
 
 function renderProjects(){
 
@@ -280,6 +292,10 @@ function renderProjects(){
 
             <p>Team: ${project.members} Members</p>
 
+              <button onclick="viewProject(${i})">
+                View Details
+            </button>
+
             <button onclick="editProject(${i})">
                 Edit
             </button>
@@ -302,6 +318,17 @@ function deleteProject(index){
     saveProjects();
 
     renderProjects();
+}
+
+function viewProject(index){
+
+    localStorage.setItem(
+        "selectedProject",
+        index
+    );
+
+    window.location.href =
+        "project-details.html";
 }
 
 function editProject(index){
@@ -328,6 +355,11 @@ function editProject(index){
     projects[index].progress
     );
 
+    const newMembers = prompt(
+    "Enter Team Members",
+    projects[index].members
+    );
+
     projects[index].name =
         newName.trim();
 
@@ -336,6 +368,9 @@ function editProject(index){
 
     projects[index].progress =
         Number(newProgress);
+
+    projects[index].members =
+        Number(newMembers);
 
     saveProjects();
 
@@ -652,3 +687,52 @@ if(
 ){
     renderProjects();
 }
+
+function loadProjectDetails(){
+
+    const projectName =
+        document.getElementById(
+            "project-name"
+        );
+
+    if(!projectName){
+        return;
+    }
+
+    const selectedIndex =
+        localStorage.getItem(
+            "selectedProject"
+        );
+
+    const project =
+        projects[selectedIndex];
+
+    console.log(projects);
+    console.log(project);
+
+    if(!project){
+        return;
+    }
+
+    document.getElementById(
+        "project-name"
+    ).textContent =
+        project.name;
+
+    document.getElementById(
+        "project-status"
+    ).textContent =
+        project.status;
+
+    document.getElementById(
+        "project-progress"
+    ).textContent =
+        project.progress + "%";
+
+    document.getElementById(
+        "project-members"
+    ).textContent =
+        project.members;
+}
+
+loadProjectDetails();

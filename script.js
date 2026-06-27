@@ -224,6 +224,10 @@ function addProject(){
     "Enter Team Members Count"
     );
 
+    const deadline = prompt(
+    "Enter Deadline (Example: 30 July 2026)"
+    );
+
     const description = prompt(
     "Enter Project Description"
     );
@@ -233,8 +237,8 @@ function addProject(){
     status: projectStatus || "Planning",
     progress: Number(projectProgress) || 0,
     members: Number(memberCount) || 1,
-    description:
-        description || "No Description"
+    deadline: deadline || "Not Set",
+    description: description || "No Description"
     });
 
     saveProjects();
@@ -276,7 +280,11 @@ function renderProjects(){
         card.innerHTML = `
             <h3>${project.name}</h3>
 
+            <p>${project.description}</p>
+
             <p>Status: ${project.status}</p>
+
+            <p>Deadline: ${project.deadline}</p>
 
             <p>
                 Progress:
@@ -720,9 +728,19 @@ function loadProjectDetails(){
         project.name;
 
     document.getElementById(
+        "project-description"
+    ).textContent =
+        project.description;
+
+    document.getElementById(
         "project-status"
     ).textContent =
         project.status;
+
+    document.getElementById(
+        "project-deadline"
+    ).textContent =
+        project.deadline;
 
     document.getElementById(
         "project-progress"

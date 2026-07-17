@@ -1,3 +1,4 @@
+import { TaskProvider } from "./context/TaskContext";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -9,7 +10,9 @@ import { ProjectProvider } from "./context/ProjectContext";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ProjectProvider>
-      <App />
+      <TaskProvider>
+        <App />
+      </TaskProvider>
     </ProjectProvider>
   </StrictMode>
 );

@@ -1,42 +1,77 @@
 import {
-  FolderKanban,
-  ListTodo,
-  CheckCircle2,
-  Clock3,
-} from "lucide-react";
+  FaFolderOpen,
+  FaTasks,
+  FaCheckCircle,
+  FaClock,
+} from "react-icons/fa";
 
-import StatsCard from "./StatsCard";
+function StatsGrid({ projects, tasks }) {
 
-function StatsGrid({ projects }) {
+  const completed = tasks.filter(
+    (task) => task.status === "Completed"
+  ).length;
+
+  const pending = tasks.filter(
+    (task) => task.status !== "Completed"
+  ).length;
+
+  const cards = [
+    {
+      title: "Projects",
+      value: projects.length,
+      icon: <FaFolderOpen />,
+    },
+    {
+      title: "Tasks",
+      value: tasks.length,
+      icon: <FaTasks />,
+    },
+    {
+      title: "Completed",
+      value: completed,
+      icon: <FaCheckCircle />,
+    },
+    {
+      title: "Pending",
+      value: pending,
+      icon: <FaClock />,
+    },
+  ];
+
   return (
-    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      <StatsCard
-        title="Projects"
-        value={projects.length}
-        icon={<FolderKanban className="w-6 h-6 text-blue-600" />}
-        color="bg-blue-100"
-      />
+    <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
 
-      <StatsCard
-        title="Tasks"
-        value="0"
-        icon={<ListTodo className="w-6 h-6 text-purple-600" />}
-        color="bg-purple-100"
-      />
+      {cards.map((card) => (
 
-      <StatsCard
-        title="Completed"
-        value="0"
-        icon={<CheckCircle2 className="w-6 h-6 text-green-600" />}
-        color="bg-green-100"
-      />
+        <div
+          key={card.title}
+          className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
+        >
 
-      <StatsCard
-        title="Pending"
-        value="0"
-        icon={<Clock3 className="w-6 h-6 text-orange-600" />}
-        color="bg-orange-100"
-      />
+          <div className="flex justify-between items-center">
+
+            <div>
+
+              <p className="text-gray-500">
+                {card.title}
+              </p>
+
+              <h2 className="text-3xl font-bold mt-2">
+                {card.value}
+              </h2>
+
+            </div>
+
+            <div className="text-3xl text-blue-600">
+              {card.icon}
+            </div>
+
+          </div>
+
+        </div>
+
+      ))}
+
     </div>
   );
 }

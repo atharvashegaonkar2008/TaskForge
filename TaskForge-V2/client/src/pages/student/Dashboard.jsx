@@ -1,22 +1,28 @@
 import { useProject } from "../../context/ProjectContext";
+import { useTask } from "../../context/TaskContext";
+
 import WelcomeBanner from "../../components/dashboard/WelcomeBanner";
 import StatsGrid from "../../components/dashboard/StatsGrid";
 import RecentProjects from "../../components/dashboard/RecentProjects";
-import RecentTasks from "../../components/dashboard/RecentTasks";
 
 function Dashboard() {
   const { projects } = useProject();
+  const { tasks } = useTask();
 
   return (
     <div className="space-y-8">
+
       <WelcomeBanner />
 
-      <StatsGrid projects={projects} />
+      <StatsGrid
+        projects={projects}
+        tasks={tasks}
+      />
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <RecentProjects projects={projects} />
-        <RecentTasks />
-      </div>
+      <RecentProjects
+        projects={projects}
+      />
+
     </div>
   );
 }

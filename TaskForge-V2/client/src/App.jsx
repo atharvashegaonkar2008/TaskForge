@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+import ProtectedRoute from "./routes/ProtectedRoute";
+
 import DashboardLayout from "./components/layout/DashboardLayout";
 
 // Dashboard Pages
@@ -29,20 +31,54 @@ function App() {
           element={<ForgotPassword />}
         />
 
-        {/* Dashboard Routes */}
-        <Route path="/" element={<DashboardLayout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
+        {/* Protected Dashboard Routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route
+            index
+            element={<Navigate to="/dashboard" replace />}
+          />
 
-          <Route path="dashboard" element={<Dashboard />} />
+          <Route
+            path="dashboard"
+            element={<Dashboard />}
+          />
 
-          <Route path="projects" element={<Projects />} />
-          <Route path="projects/:id" element={<ProjectDetails />} />
+          <Route
+            path="projects"
+            element={<Projects />}
+          />
 
-          <Route path="tasks" element={<Tasks />} />
-          <Route path="tasks/:id" element={<TaskDetails />} />
+          <Route
+            path="projects/:id"
+            element={<ProjectDetails />}
+          />
 
-          <Route path="files" element={<Files />} />
-          <Route path="settings" element={<Settings />} />
+          <Route
+            path="tasks"
+            element={<Tasks />}
+          />
+
+          <Route
+            path="tasks/:id"
+            element={<TaskDetails />}
+          />
+
+          <Route
+            path="files"
+            element={<Files />}
+          />
+
+          <Route
+            path="settings"
+            element={<Settings />}
+          />
         </Route>
 
       </Routes>

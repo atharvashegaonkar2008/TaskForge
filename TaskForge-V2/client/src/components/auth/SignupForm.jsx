@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { signupUser } from "../../services/authService";
 import AuthInput from "./AuthInput";
 
 function SignupForm() {
@@ -10,6 +12,9 @@ function SignupForm() {
     confirmPassword: "",
   });
 
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -17,9 +22,9 @@ function SignupForm() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (
       !formData.name ||
       !formData.email ||
@@ -30,15 +35,33 @@ function SignupForm() {
       alert("Please fill all fields.");
       return;
     }
-
+  
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
-
-    console.log(formData);
-
-    // Backend API will be connected later
+  
+    try {
+      setLoading(true);
+  
+      const response = await signupUser({
+        name: formData.name,
+        email: formData.email,
+        college: formData.college,
+        password: formData.password,
+      });
+  
+      alert(response.message);
+  
+      navigate("/login");
+  
+    } catch (error) {
+      alert(
+        error.response?.data?.message || "Something went wrong."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -89,11 +112,11 @@ function SignupForm() {
 
       <button
         type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
+        disabled={loading}
+        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-3 rounded-lg font-semibold transition"
       >
-        Create Account
+        {loading ? "Creating Account..." : "Create Account"}
       </button>
-
     </form>
   );
 }

@@ -1,12 +1,17 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "../../services/authService";
 import AuthInput from "./AuthInput";
 
 function LoginForm() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -15,12 +20,47 @@ function LoginForm() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
+    // Validation
+    if (!formData.email || !formData.password) {
+      alert("Please fill all fields.");
+      return;
+    }
 
-    // Backend API will be connected later
+    try {
+      setLoading(true);
+
+      const response = await loginUser({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      // Save JWT Token
+      localStorage.setItem("token", response.token);
+
+      // Save User Details
+      localStorage.setItem("user", JSON.stringify(response.user));
+
+      alert(response.message);
+
+      // Clear form
+      setFormData({
+        email: "",
+        password: "",
+      });
+
+      // Navigate to Dashboard
+      navigate("/dashboard");
+
+    } catch (error) {
+      alert(
+        error.response?.data?.message || "Login failed."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -44,37 +84,33 @@ function LoginForm() {
         onChange={handleChange}
       />
 
-      <div className="flex justify-end">
-        <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
 
-    <label className="flex items-center gap-2">
-
-        <input
+        <label className="flex items-center gap-2">
+          <input
             type="checkbox"
             className="w-4 h-4"
-            />
-
-            <span className="text-sm">
+          />
+          <span className="text-sm">
             Remember Me
-            </span>
-
+          </span>
         </label>
 
         <Link
-            to="/forgot-password"
-            className="text-blue-600 hover:underline text-sm"
+          to="/forgot-password"
+          className="text-blue-600 hover:underline text-sm"
         >
-            Forgot Password?
+          Forgot Password?
         </Link>
 
-        </div>
       </div>
 
       <button
         type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
+        disabled={loading}
+        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-3 rounded-lg font-semibold transition"
       >
-        Login
+        {loading ? "Logging in..." : "Login"}
       </button>
 
     </form>

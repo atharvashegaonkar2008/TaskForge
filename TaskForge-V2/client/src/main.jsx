@@ -1,18 +1,22 @@
-import { TaskProvider } from "./context/TaskContext";
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-
-import "./index.css";   
+import React from "react";
+import ReactDOM from "react-dom/client";
 
 import App from "./App";
-import { ProjectProvider } from "./context/ProjectContext";
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <ProjectProvider>
-      <TaskProvider>
-        <App />
-      </TaskProvider>
-    </ProjectProvider>
-  </StrictMode>
+import "./index.css";
+
+import { ProjectProvider } from "./context/ProjectContext";
+import { TaskProvider } from "./context/TaskContext";
+import { AuthProvider } from "./context/AuthContext";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <AuthProvider>
+      <ProjectProvider>
+        <TaskProvider>
+          <App />
+        </TaskProvider>
+      </ProjectProvider>
+    </AuthProvider>
+  </React.StrictMode>
 );

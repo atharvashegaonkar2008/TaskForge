@@ -1,11 +1,14 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaTachometerAlt,
   FaProjectDiagram,
   FaTasks,
   FaFolderOpen,
   FaCog,
+  FaSignOutAlt,
 } from "react-icons/fa";
+
+import { useAuth } from "../../context/AuthContext";
 
 const menuItems = [
   {
@@ -36,6 +39,14 @@ const menuItems = [
 ];
 
 function Sidebar() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <aside className="w-64 min-h-screen bg-slate-900 text-white flex flex-col">
 
@@ -67,8 +78,20 @@ function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-slate-700 text-center text-sm text-gray-400">
-        TaskForge v1.0
+      <div className="p-4 border-t border-slate-700">
+
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold transition"
+        >
+          <FaSignOutAlt />
+          Logout
+        </button>
+
+        <p className="text-center text-sm text-gray-400 mt-4">
+          TaskForge v1.0
+        </p>
+
       </div>
 
     </aside>

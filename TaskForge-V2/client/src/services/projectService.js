@@ -1,41 +1,31 @@
-const STORAGE_KEY = "taskforge_projects";
+import api from "./api";
 
 // Get all projects
-export const getProjects = () => {
-  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+export const getProjects = async () => {
+  const response = await api.get("/projects");
+  return response.data;
 };
 
-// Save all projects
-export const saveProjects = (projects) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+// Create project
+export const createProject = async (projectData) => {
+  const response = await api.post("/projects", projectData);
+  return response.data;
 };
 
-// Add project
-export const addProject = (project) => {
-  const projects = getProjects();
-  projects.push(project);
-  saveProjects(projects);
+// Get single project
+export const getProjectById = async (id) => {
+  const response = await api.get(`/projects/${id}`);
+  return response.data;
 };
 
 // Update project
-export const updateProject = (updatedProject) => {
-  const projects = getProjects().map((project) =>
-    project.id === updatedProject.id ? updatedProject : project
-  );
-
-  saveProjects(projects);
+export const updateProject = async (id, projectData) => {
+  const response = await api.put(`/projects/${id}`, projectData);
+  return response.data;
 };
 
 // Delete project
-export const deleteProject = (id) => {
-  const projects = getProjects().filter(
-    (project) => project.id !== id
-  );
-
-  saveProjects(projects);
-};
-
-// Get project by ID
-export const getProjectById = (id) => {
-  return getProjects().find((project) => project.id === id);
+export const deleteProject = async (id) => {
+  const response = await api.delete(`/projects/${id}`);
+  return response.data;
 };

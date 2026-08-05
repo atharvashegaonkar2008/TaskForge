@@ -5,13 +5,14 @@ import { useProject } from "../../context/ProjectContext";
 function AddProjectModal({ isOpen, onClose }) {
   const { addProject } = useProject();
 
-  const handleCreateProject = (projectData) => {
-    addProject({
-      id: Date.now().toString(),
-      ...projectData,
-    });
-
-    onClose();
+  const handleCreateProject = async (projectData) => {
+    try {
+      await addProject(projectData);
+      onClose();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to create project.");
+    }
   };
 
   return (

@@ -5,33 +5,41 @@ const ProjectContext = createContext();
 
 export const ProjectProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch all projects from MongoDB
+  const fetchProjects = async () => {
+    try {
+      const response = await projectService.getProjects();
+      setProjects(response.projects);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setProjects(projectService.getProjects());
+    fetchProjects();
   }, []);
 
-  const addProject = (project) => {
-    projectService.addProject(project);
-    setProjects(projectService.getProjects());
-  };
-
-  const updateProject = (project) => {
-    projectService.updateProject(project);
-    setProjects(projectService.getProjects());
-  };
-
-  const deleteProject = (id) => {
-    projectService.deleteProject(id);
-    setProjects(projectService.getProjects());
+  // Create Project
+  const addProject = async (projectData) => {
+    try {
+      await projectService.createProject(projectData);
+      await fetchProjects();
+    } catch (error) {
+      console.error("Error creating project:", error);
+    }
   };
 
   return (
     <ProjectContext.Provider
       value={{
         projects,
+        loading,
         addProject,
-        updateProject,
-        deleteProject,
+        fetchProjects,
       }}
     >
       {children}

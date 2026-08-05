@@ -40,46 +40,22 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route
-            index
-            element={<Navigate to="/dashboard" replace />}
-          />
+          <Route index element={<Navigate to="/dashboard" replace />} />
 
-          <Route
-            path="dashboard"
-            element={<Dashboard />}
-          />
+          <Route path="dashboard" element={<Dashboard />} />
 
-          <Route
-            path="projects"
-            element={<Projects />}
-          />
+          <Route path="projects" element={<Projects />} />
+          <Route path="projects/:id" element={<ProjectDetails />} />
 
-          <Route
-            path="projects/:id"
-            element={<ProjectDetails />}
-          />
+          <Route path="tasks" element={<Tasks />} />
+          <Route path="tasks/:id" element={<TaskDetails />} />
 
-          <Route
-            path="tasks"
-            element={<Tasks />}
-          />
-
-          <Route
-            path="tasks/:id"
-            element={<TaskDetails />}
-          />
-
-          <Route
-            path="files"
-            element={<Files />}
-          />
-
-          <Route
-            path="settings"
-            element={<Settings />}
-          />
+          <Route path="files" element={<Files />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
+
+        {/* Redirect unknown routes */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
 
       </Routes>
     </BrowserRouter>

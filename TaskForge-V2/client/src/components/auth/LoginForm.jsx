@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/authService";
 import AuthInput from "./AuthInput";
 
 function LoginForm() {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -42,6 +44,7 @@ function LoginForm() {
 
       // Save User Details
       localStorage.setItem("user", JSON.stringify(response.user));
+      setUser(response.user);
 
       alert(response.message);
 

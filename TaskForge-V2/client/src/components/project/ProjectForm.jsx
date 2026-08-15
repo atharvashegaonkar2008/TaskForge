@@ -1,104 +1,147 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-function ProjectForm({ onSubmit, initialData = {}, submitText = "Create Project" }) {
+function ProjectForm({ onSubmit, loading = false }) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    status: "In Progress",
+    status: "Planning",
     progress: 0,
   });
 
-  useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0) {
-      setFormData({
-        title: initialData.title || "",
-        description: initialData.description || "",
-        status: initialData.status || "In Progress",
-        progress: initialData.progress || 0,
-      });
-    }
-  }, [initialData]);
-
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]:
-        e.target.name === "progress"
-          ? Number(e.target.value)
-          : e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]:
+        name === "progress"
+          ? Number(value)
+          : value,
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.title.trim()) {
-      alert("Project title is required.");
+      alert("Please enter a project title.");
       return;
     }
 
-    onSubmit(formData);
+    if (!formData.description.trim()) {
+      alert("Please enter a project description.");
+      return;
+    }
+
+    await onSubmit(formData);
+
+    // Clear form after successful submission
+    setFormData({
+      title: "",
+      description: "",
+      status: "Planning",
+      progress: 0,
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-5"
+    >
+      {/* Project Title */}
       <div>
-        <label className="block mb-2 font-medium">Project Title</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Project Title
+        </label>
+
         <input
           type="text"
           name="title"
           value={formData.title}
           onChange={handleChange}
-          className="w-full border rounded-lg px-4 py-2"
+          placeholder="Enter project title"
+          disabled={loading}
+          className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
         />
       </div>
 
+      {/* Description */}
       <div>
-        <label className="block mb-2 font-medium">Description</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Description
+        </label>
+
         <textarea
           name="description"
-          rows="4"
           value={formData.description}
           onChange={handleChange}
-          className="w-full border rounded-lg px-4 py-2"
+          placeholder="Enter project description"
+          rows="4"
+          disabled={loading}
+          className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
         />
       </div>
 
+      {/* Status */}
       <div>
-        <label className="block mb-2 font-medium">Status</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Status
+        </label>
+
         <select
           name="status"
           value={formData.status}
           onChange={handleChange}
-          className="w-full border rounded-lg px-4 py-2"
+          disabled={loading}
+          className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
         >
-          <option>In Progress</option>
-          <option>Completed</option>
-          <option>Pending</option>
+          <option value="Planning">
+            Planning
+          </option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
+
+          <option value="On Hold">
+            On Hold
+          </option>
         </select>
       </div>
 
+      {/* Progress */}
       <div>
-        <label className="block mb-2 font-medium">Progress (%)</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Progress: {formData.progress}%
+        </label>
+
         <input
-          type="number"
+          type="range"
+          name="progress"
           min="0"
           max="100"
-          name="progress"
           value={formData.progress}
           onChange={handleChange}
-          className="w-full border rounded-lg px-4 py-2"
+          disabled={loading}
+          className="w-full"
         />
       </div>
 
+      {/* Submit */}
       <button
         type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg"
+        disabled={loading}
+        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-3 rounded-lg font-semibold transition"
       >
-        {submitText}
+        {loading
+          ? "Creating Project..."
+          : "Create Project"}
       </button>
-
     </form>
   );
 }

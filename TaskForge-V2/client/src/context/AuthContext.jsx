@@ -4,26 +4,54 @@ import { getProfile } from "../services/profileService";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+
+    if (savedUser) {
+      try {
+        return JSON.parse(savedUser);
+      } catch (error) {
+        console.error("Invalid saved user:", error);
+        localStorage.removeItem("user");
+      }
+    }
+
+    return null;
+  });
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
+      const token = localStorage.getItem("token");
+
+      // No token = not logged in
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
       try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          setLoading(false);
-          return;
-        }
-
         const response = await getProfile();
 
-        setUser(response.user);
+        if (response?.user) {
+          setUser(response.user);
+
+          localStorage.setItem(
+            "user",
+            JSON.stringify(response.user)
+          );
+        }
       } catch (error) {
-        console.error(error);
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        console.error("Profile fetch failed:", error);
+
+        // Only clear authentication if the token is actually invalid
+        if (error.response?.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setUser(null);
+        }
       } finally {
         setLoading(false);
       }
@@ -35,9 +63,10 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+
     setUser(null);
   };
-  
+
   return (
     <AuthContext.Provider
       value={{

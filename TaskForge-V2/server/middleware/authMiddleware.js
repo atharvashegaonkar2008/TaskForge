@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 
-const protect = (req, res, next) => {
+const authMiddleware = (req, res, next) => {
   try {
-    // Get token from request header
+    // Get authorization header
     const authHeader = req.headers.authorization;
 
     // Check if token exists
@@ -13,16 +13,19 @@ const protect = (req, res, next) => {
       });
     }
 
-    // Extract token
+    // Extract JWT token
     const token = authHeader.split(" ")[1];
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify JWT
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
 
-    // Save user id in request
+    // Store decoded user information
     req.user = decoded;
 
-    // Continue to next middleware/controller
+    // Continue to protected route
     next();
 
   } catch (error) {
@@ -33,4 +36,4 @@ const protect = (req, res, next) => {
   }
 };
 
-module.exports = protect;
+module.exports = authMiddleware;

@@ -1,54 +1,65 @@
 const express = require("express");
 
 const {
-  createProject,
-  getProjects,
-  updateProject,
-  deleteProject,
-} = require("../controllers/projectController");
+  createTask,
+  getTasks,
+  getTaskById,
+  updateTask,
+  deleteTask,
+} = require("../controllers/taskController");
 
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 // ==========================================
-// CREATE PROJECT
-// POST /api/projects
+// CREATE TASK
+// POST /api/tasks
 // ==========================================
 router.post(
   "/",
   authMiddleware,
-  createProject
+  createTask
 );
 
 // ==========================================
-// GET ALL PROJECTS
-// GET /api/projects
+// GET ALL TASKS
+// GET /api/tasks
 // ==========================================
 router.get(
   "/",
   authMiddleware,
-  getProjects
+  getTasks
 );
 
 // ==========================================
-// UPDATE PROJECT
-// PUT /api/projects/:id
+// GET SINGLE TASK
+// GET /api/tasks/:id
+// ==========================================
+router.get(
+  "/:id",
+  authMiddleware,
+  getTaskById
+);
+
+// ==========================================
+// UPDATE TASK
+// PUT /api/tasks/:id
 // ==========================================
 router.put(
   "/:id",
   authMiddleware,
-  updateProject
+  updateTask
 );
 
 // ==========================================
-// DELETE PROJECT
-// DELETE /api/projects/:id
+// DELETE TASK
+// DELETE /api/tasks/:id
 // ==========================================
 router.delete(
   "/:id",
   authMiddleware,
-  deleteProject
+  deleteTask
 );
 
 module.exports = router;

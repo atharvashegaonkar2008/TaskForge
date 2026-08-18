@@ -17,37 +17,68 @@ function TaskCard({ task }) {
 
   const { projects } = useProject();
 
+  // MongoDB projectId can be either:
+  // "projectObjectId"
+  // or populated object { _id, title }
+  const projectId =
+    typeof task.projectId === "object"
+      ? task.projectId?._id
+      : task.projectId;
+
   const project = projects.find(
-    (p) => p.id === task.projectId
+    (p) => p._id === projectId
   );
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
+  // ==========================================
+  // STATUS COLOR
+  // ==========================================
   const getStatusColor = (status) => {
     switch (status) {
       case "Completed":
         return "bg-green-100 text-green-700";
+
       case "In Progress":
         return "bg-blue-100 text-blue-700";
-      case "To Do":
+
+      case "Pending":
         return "bg-yellow-100 text-yellow-700";
+
       default:
         return "bg-gray-100 text-gray-700";
     }
   };
 
+  // ==========================================
+  // PRIORITY COLOR
+  // ==========================================
   const getPriorityColor = (priority) => {
     switch (priority) {
       case "High":
         return "bg-red-100 text-red-700";
+
       case "Medium":
         return "bg-orange-100 text-orange-700";
+
       case "Low":
         return "bg-green-100 text-green-700";
+
       default:
         return "bg-gray-100 text-gray-700";
     }
+  };
+
+  // ==========================================
+  // FORMAT DATE
+  // ==========================================
+  const formatDate = (date) => {
+    if (!date) {
+      return "No Due Date";
+    }
+
+    return new Date(date).toLocaleDateString();
   };
 
   return (
@@ -61,7 +92,7 @@ function TaskCard({ task }) {
 
         {/* Description */}
         <p className="text-gray-500 mt-2">
-          {task.description}
+          {task.description || "No description"}
         </p>
 
         {/* Project */}
@@ -96,7 +127,7 @@ function TaskCard({ task }) {
           <FaCalendarAlt />
 
           <span>
-            {task.dueDate || "No Due Date"}
+            {formatDate(task.dueDate)}
           </span>
 
         </div>
@@ -106,7 +137,9 @@ function TaskCard({ task }) {
 
           {/* View */}
           <button
-            onClick={() => navigate(`/tasks/${task.id}`)}
+            onClick={() =>
+              navigate(`/tasks/${task._id}`)
+            }
             className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
             title="View Task"
           >
@@ -148,6 +181,7 @@ function TaskCard({ task }) {
         onClose={() => setIsDeleteOpen(false)}
         task={task}
       />
+
     </>
   );
 }

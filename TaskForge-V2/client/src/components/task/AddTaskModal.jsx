@@ -5,13 +5,16 @@ import { useTask } from "../../context/TaskContext";
 function AddTaskModal({ isOpen, onClose }) {
   const { addTask } = useTask();
 
-  const handleAddTask = (formData) => {
-    addTask({
-      id: Date.now().toString(),
-      ...formData,
-    });
-
-    onClose();
+  const handleAddTask = async (formData) => {
+    try {
+      await addTask(formData);
+      onClose();
+    } catch (error) {
+      console.error(
+        "Error creating task:",
+        error
+      );
+    }
   };
 
   return (

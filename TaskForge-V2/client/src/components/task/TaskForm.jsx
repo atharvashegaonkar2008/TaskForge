@@ -22,10 +22,20 @@ function TaskForm({
       setFormData({
         title: initialData.title || "",
         description: initialData.description || "",
-        projectId: initialData.projectId || "",
-        status: initialData.status || "To Do",
+
+        // Handle MongoDB projectId
+        projectId:
+          initialData.projectId?._id ||
+          initialData.projectId ||
+          "",
+
+        status: initialData.status || "Pending",
         priority: initialData.priority || "Medium",
-        dueDate: initialData.dueDate || "",
+
+        // Convert date safely for input[type="date"]
+        dueDate: initialData.dueDate
+          ? initialData.dueDate.substring(0, 10)
+          : "",
       });
     }
   }, [initialData]);
@@ -54,8 +64,10 @@ function TaskForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-5"
+    >
       {/* Task Title */}
       <div>
         <label className="block mb-2 font-medium">
@@ -100,12 +112,14 @@ function TaskForm({
           onChange={handleChange}
           className="w-full border rounded-lg px-4 py-2"
         >
-          <option value="">Select Project</option>
+          <option value="">
+            Select Project
+          </option>
 
           {projects.map((project) => (
             <option
-              key={project.id}
-              value={project.id}
+              key={project._id}
+              value={project._id}
             >
               {project.title}
             </option>
@@ -125,9 +139,17 @@ function TaskForm({
           onChange={handleChange}
           className="w-full border rounded-lg px-4 py-2"
         >
-          <option>To Do</option>
-          <option>In Progress</option>
-          <option>Completed</option>
+          <option value="Pending">
+            Pending
+          </option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
         </select>
       </div>
 
@@ -143,9 +165,17 @@ function TaskForm({
           onChange={handleChange}
           className="w-full border rounded-lg px-4 py-2"
         >
-          <option>High</option>
-          <option>Medium</option>
-          <option>Low</option>
+          <option value="High">
+            High
+          </option>
+
+          <option value="Medium">
+            Medium
+          </option>
+
+          <option value="Low">
+            Low
+          </option>
         </select>
       </div>
 
@@ -171,7 +201,6 @@ function TaskForm({
       >
         {submitText}
       </button>
-
     </form>
   );
 }

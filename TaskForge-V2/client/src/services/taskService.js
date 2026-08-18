@@ -1,26 +1,58 @@
-const STORAGE_KEY = "taskforge_tasks";
+import api from "./api";
 
-export const getTasks = () => {
-  const tasks = localStorage.getItem(STORAGE_KEY);
-  return tasks ? JSON.parse(tasks) : [];
+// ==========================================
+// GET ALL TASKS
+// ==========================================
+export const getTasks = async () => {
+  const response = await api.get("/tasks");
+
+  return response.data;
 };
 
-export const addTask = (task) => {
-  const tasks = getTasks();
-  tasks.push(task);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+
+// ==========================================
+// GET SINGLE TASK
+// ==========================================
+export const getTaskById = async (id) => {
+  const response = await api.get(`/tasks/${id}`);
+
+  return response.data;
 };
 
-export const updateTask = (updatedTask) => {
-  const tasks = getTasks().map((task) =>
-    task.id === updatedTask.id ? updatedTask : task
+
+// ==========================================
+// CREATE TASK
+// ==========================================
+export const createTask = async (taskData) => {
+  const response = await api.post(
+    "/tasks",
+    taskData
   );
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  return response.data;
 };
 
-export const deleteTask = (id) => {
-  const tasks = getTasks().filter((task) => task.id !== id);
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+// ==========================================
+// UPDATE TASK
+// ==========================================
+export const updateTask = async (id, taskData) => {
+  const response = await api.put(
+    `/tasks/${id}`,
+    taskData
+  );
+
+  return response.data;
+};
+
+
+// ==========================================
+// DELETE TASK
+// ==========================================
+export const deleteTask = async (id) => {
+  const response = await api.delete(
+    `/tasks/${id}`
+  );
+
+  return response.data;
 };

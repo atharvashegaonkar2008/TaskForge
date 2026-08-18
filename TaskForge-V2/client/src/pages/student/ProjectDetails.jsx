@@ -13,8 +13,12 @@ function ProjectDetails() {
   const { projects } = useProject();
   const { tasks } = useTask();
 
-  const project = projects.find((p) => p.id === id);
+  // Find project using MongoDB _id
+  const project = projects.find(
+    (p) => p._id === id
+  );
 
+  // Project not found
   if (!project) {
     return (
       <div className="text-center mt-10">
@@ -24,7 +28,7 @@ function ProjectDetails() {
 
         <button
           onClick={() => navigate("/projects")}
-          className="mt-5 bg-blue-600 text-white px-5 py-2 rounded-lg"
+          className="mt-5 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg"
         >
           Back to Projects
         </button>
@@ -32,9 +36,11 @@ function ProjectDetails() {
     );
   }
 
-  // Tasks that belong to this project
+  // Get tasks belonging to this project
   const projectTasks = tasks.filter(
-    (task) => task.projectId === project.id
+    (task) =>
+      task.projectId === project._id ||
+      task.projectId?._id === project._id
   );
 
   // Statistics
@@ -49,29 +55,37 @@ function ProjectDetails() {
   return (
     <div className="space-y-8">
 
-      {/* Header */}
+      {/* ========================= */}
+      {/* HEADER */}
+      {/* ========================= */}
+
       <div className="flex items-center gap-4">
 
         <button
           onClick={() => navigate("/projects")}
-          className="p-3 rounded-lg bg-gray-100 hover:bg-gray-200"
+          className="p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+          title="Back to Projects"
         >
           <FaArrowLeft />
         </button>
 
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-bold text-gray-800">
             {project.title}
           </h1>
 
-          <p className="text-gray-500">
+          <p className="text-gray-500 mt-1">
             Project Details
           </p>
         </div>
 
       </div>
 
-      {/* Project Information */}
+
+      {/* ========================= */}
+      {/* PROJECT INFORMATION */}
+      {/* ========================= */}
+
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
 
         <h2 className="text-xl font-semibold mb-4">
@@ -82,17 +96,23 @@ function ProjectDetails() {
           {project.description}
         </p>
 
+
         <div className="grid md:grid-cols-2 gap-8 mt-8">
+
+          {/* Status */}
 
           <div>
             <h3 className="font-semibold mb-2">
               Status
             </h3>
 
-            <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700">
+            <span className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">
               {project.status}
             </span>
           </div>
+
+
+          {/* Progress */}
 
           <div>
 
@@ -103,7 +123,7 @@ function ProjectDetails() {
             <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
 
               <div
-                className="bg-blue-600 h-full rounded-full"
+                className="bg-blue-600 h-full rounded-full transition-all duration-300"
                 style={{
                   width: `${project.progress}%`,
                 }}
@@ -111,17 +131,26 @@ function ProjectDetails() {
 
             </div>
 
-            <p className="mt-2">
+            <p className="mt-2 text-gray-600">
               {project.progress}%
             </p>
+
           </div>
+
         </div>
+
       </div>
 
-      {/* Statistics */}
+
+      {/* ========================= */}
+      {/* STATISTICS */}
+      {/* ========================= */}
+
       <div className="grid md:grid-cols-3 gap-6">
 
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        {/* Total */}
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 
           <h3 className="text-gray-500">
             Total Tasks
@@ -133,7 +162,10 @@ function ProjectDetails() {
 
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6">
+
+        {/* Completed */}
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 
           <h3 className="text-gray-500">
             Completed Tasks
@@ -145,7 +177,10 @@ function ProjectDetails() {
 
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6">
+
+        {/* Pending */}
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 
           <h3 className="text-gray-500">
             Pending Tasks
@@ -159,12 +194,28 @@ function ProjectDetails() {
 
       </div>
 
-      {/* Project Tasks */}
+
+      {/* ========================= */}
+      {/* PROJECT TASKS */}
+      {/* ========================= */}
+
       <div>
 
-        <h2 className="text-2xl font-bold mb-5">
-          Project Tasks
-        </h2>
+        <div className="flex items-center justify-between mb-5">
+
+          <h2 className="text-2xl font-bold">
+            Project Tasks
+          </h2>
+
+          <button
+            onClick={() => navigate("/tasks")}
+            className="text-blue-600 hover:text-blue-700 font-medium"
+          >
+            View All Tasks
+          </button>
+
+        </div>
+
 
         {projectTasks.length === 0 ? (
 
@@ -181,18 +232,16 @@ function ProjectDetails() {
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
 
             {projectTasks.map((task) => (
+
               <TaskCard
-                key={task.id}
+                key={task._id || task.id}
                 task={task}
               />
+
             ))}
-
           </div>
-
         )}
-
       </div>
-
     </div>
   );
 }

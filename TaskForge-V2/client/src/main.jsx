@@ -5,11 +5,19 @@ import App from "./App";
 
 import "./index.css";
 
+// ==========================================
+// CONTEXT PROVIDERS
+// ==========================================
+import { AuthProvider } from "./context/AuthContext";
 import { ProjectProvider } from "./context/ProjectContext";
 import { TaskProvider } from "./context/TaskContext";
-import { AuthProvider } from "./context/AuthContext";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+// ==========================================
+// RENDER APPLICATION
+// ==========================================
+ReactDOM.createRoot(
+  document.getElementById("root")
+).render(
   <React.StrictMode>
     <AuthProvider>
       <ProjectProvider>

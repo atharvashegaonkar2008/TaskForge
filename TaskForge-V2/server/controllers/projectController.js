@@ -1,5 +1,4 @@
 const Project = require("../models/Project");
-const mongoose = require("mongoose");
 
 // ==========================================
 // CREATE PROJECT
@@ -7,41 +6,60 @@ const mongoose = require("mongoose");
 // ==========================================
 const createProject = async (req, res) => {
   try {
-    const { title, description, status, progress } = req.body;
+    console.log("CREATE PROJECT REQUEST");
+    console.log("User:", req.user);
+    console.log("Body:", req.body);
 
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated.",
-      });
-    }
+    const {
+      title,
+      description,
+      status,
+      progress,
+    } = req.body;
 
+    // Validation
     if (!title || !description) {
       return res.status(400).json({
         success: false,
-        message: "Title and description are required.",
+        message:
+          "Title and description are required.",
       });
     }
 
+    // Create project
     const project = await Project.create({
       title,
       description,
       status: status || "Planning",
-      progress: progress ?? 0,
+      progress:
+        progress !== undefined
+          ? progress
+          : 0,
       owner: req.user.id,
     });
 
-    res.status(201).json({
+    console.log(
+      "PROJECT CREATED:",
+      project
+    );
+
+    return res.status(201).json({
       success: true,
-      message: "Project created successfully.",
+      message:
+        "Project created successfully.",
       project,
     });
-  } catch (error) {
-    console.error("CREATE PROJECT ERROR:", error);
 
-    res.status(500).json({
+  } catch (error) {
+    console.error(
+      "CREATE PROJECT ERROR:",
+      error
+    );
+
+    return res.status(500).json({
       success: false,
       message: "Server Error",
+      error: error.message,
     });
   }
 };
@@ -53,72 +71,33 @@ const createProject = async (req, res) => {
 // ==========================================
 const getProjects = async (req, res) => {
   try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated.",
+    console.log(
+      "GET PROJECTS REQUEST"
+    );
+
+    const projects =
+      await Project.find({
+        owner: req.user.id,
+      }).sort({
+        createdAt: -1,
       });
-    }
 
-    const projects = await Project.find({
-      owner: req.user.id,
-    }).sort({
-      createdAt: -1,
-    });
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: projects.length,
       projects,
     });
-  } catch (error) {
-    console.error("GET PROJECTS ERROR:", error);
 
-    res.status(500).json({
+  } catch (error) {
+    console.error(
+      "GET PROJECTS ERROR:",
+      error
+    );
+
+    return res.status(500).json({
       success: false,
       message: "Server Error",
-    });
-  }
-};
-
-
-// ==========================================
-// GET SINGLE PROJECT
-// GET /api/projects/:id
-// ==========================================
-const getProjectById = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid project ID.",
-      });
-    }
-
-    const project = await Project.findOne({
-      _id: id,
-      owner: req.user.id,
-    });
-
-    if (!project) {
-      return res.status(404).json({
-        success: false,
-        message: "Project not found.",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      project,
-    });
-  } catch (error) {
-    console.error("GET PROJECT BY ID ERROR:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Server Error",
+      error: error.message,
     });
   }
 };
@@ -131,33 +110,45 @@ const getProjectById = async (req, res) => {
 const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, status, progress } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid project ID.",
+    const {
+      title,
+      description,
+      status,
+      progress,
+    } = req.body;
+
+    console.log(
+      "UPDATE PROJECT REQUEST"
+    );
+
+    console.log("Project ID:", id);
+    console.log("User:", req.user);
+    console.log("Body:", req.body);
+
+    // Find project belonging to logged-in user
+    const project =
+      await Project.findOne({
+        _id: id,
+        owner: req.user.id,
       });
-    }
-
-    const project = await Project.findOne({
-      _id: id,
-      owner: req.user.id,
-    });
 
     if (!project) {
       return res.status(404).json({
         success: false,
-        message: "Project not found.",
+        message:
+          "Project not found.",
       });
     }
 
+    // Update only provided fields
     if (title !== undefined) {
       project.title = title;
     }
 
     if (description !== undefined) {
-      project.description = description;
+      project.description =
+        description;
     }
 
     if (status !== undefined) {
@@ -168,19 +159,32 @@ const updateProject = async (req, res) => {
       project.progress = progress;
     }
 
-    const updatedProject = await project.save();
+    // Save updated project
+    const updatedProject =
+      await project.save();
 
-    res.status(200).json({
+    console.log(
+      "PROJECT UPDATED:",
+      updatedProject
+    );
+
+    return res.status(200).json({
       success: true,
-      message: "Project updated successfully.",
+      message:
+        "Project updated successfully.",
       project: updatedProject,
     });
-  } catch (error) {
-    console.error("UPDATE PROJECT ERROR:", error);
 
-    res.status(500).json({
+  } catch (error) {
+    console.error(
+      "UPDATE PROJECT ERROR:",
+      error
+    );
+
+    return res.status(500).json({
       success: false,
       message: "Server Error",
+      error: error.message,
     });
   }
 };
@@ -194,47 +198,66 @@ const deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid project ID.",
-      });
-    }
+    console.log(
+      "DELETE PROJECT REQUEST"
+    );
 
-    const project = await Project.findOneAndDelete({
-      _id: id,
-      owner: req.user.id,
-    });
+    console.log("Project ID:", id);
+    console.log("User:", req.user);
+
+    // Find project belonging to logged-in user
+    const project =
+      await Project.findOne({
+        _id: id,
+        owner: req.user.id,
+      });
 
     if (!project) {
       return res.status(404).json({
         success: false,
-        message: "Project not found.",
+        message:
+          "Project not found.",
       });
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Project deleted successfully.",
+    // Delete project
+    await Project.deleteOne({
+      _id: id,
+      owner: req.user.id,
     });
-  } catch (error) {
-    console.error("DELETE PROJECT ERROR:", error);
 
-    res.status(500).json({
+    console.log(
+      "PROJECT DELETED:",
+      id
+    );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Project deleted successfully.",
+    });
+
+  } catch (error) {
+    console.error(
+      "DELETE PROJECT ERROR:",
+      error
+    );
+
+    return res.status(500).json({
       success: false,
       message: "Server Error",
+      error: error.message,
     });
   }
 };
 
 
 // ==========================================
-// EXPORTS
+// EXPORT
 // ==========================================
 module.exports = {
   createProject,
   getProjects,
-  getProjectById,
   updateProject,
   deleteProject,
 };

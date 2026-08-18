@@ -8,9 +8,13 @@ function DeleteTaskDialog({
 }) {
   const { deleteTask } = useTask();
 
-  const handleDelete = () => {
-    deleteTask(task.id);
-    onClose();
+  const handleDelete = async () => {
+    try {
+      await deleteTask(task._id);
+      onClose();
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   };
 
   return (
@@ -32,13 +36,15 @@ function DeleteTaskDialog({
 
         <div className="flex justify-end gap-3">
 
+          {/* Cancel */}
           <button
             onClick={onClose}
-            className="px-5 py-2 border rounded-lg"
+            className="px-5 py-2 border rounded-lg hover:bg-gray-100"
           >
             Cancel
           </button>
 
+          {/* Delete */}
           <button
             onClick={handleDelete}
             className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
